@@ -161,7 +161,8 @@ void WebSerialClass::println(double m){
 
 #if defined(WEBSERIAL_DEBUG)
     void WebSerialClass::DEBUG_WEB_SERIAL(const char* message){
-        Serial.println("[WebSerial] "+message);
+        Serial.print("[WebSerial] ");
+        Serial.println(message);
     }
 #endif
 
