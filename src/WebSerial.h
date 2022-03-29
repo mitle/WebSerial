@@ -32,6 +32,8 @@ public:
     void msgCallback(RecvMsgHandler _recv);
 
     // Print
+    
+    size_t printf(const char *format, ...);
 
     void print(String m = "");
 

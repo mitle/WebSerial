@@ -1,5 +1,9 @@
 #include "WebSerial.h"
 
+#ifndef WEBSERIAL_MAX_PRINTF_LEN
+# define WEBSERIAL_MAX_PRINTF_LEN 64
+#endif
+
 
 void WebSerialClass::begin(AsyncWebServer *server, const char* url){
     _server = server;
@@ -41,6 +45,43 @@ void WebSerialClass::begin(AsyncWebServer *server, const char* url){
 void WebSerialClass::msgCallback(RecvMsgHandler _recv){
     _RecvFunc = _recv;
 }
+
+
+
+size_t WebSerialClass::printf(const char *format, ...) {
+  va_list arg;
+  va_start(arg, format);
+  char* temp = new char[WEBSERIAL_MAX_PRINTF_LEN];
+  
+  if(!temp){
+    va_end(arg);
+    return 0;
+  }
+  char* buffer = temp;
+  size_t len = vsnprintf(temp, WEBSERIAL_MAX_PRINTF_LEN, format, arg);
+  va_end(arg);
+
+  if (len > (WEBSERIAL_MAX_PRINTF_LEN - 1)) {
+    buffer = new char[len + 1];
+    if (!buffer) {
+   	  delete[] temp;
+      return 0;
+    }
+    va_start(arg, format);
+    vsnprintf(buffer, len + 1, format, arg);
+    va_end(arg);
+  }
+  
+  _ws->textAll(buffer, len);
+  
+  if (buffer != temp) {
+    delete[] buffer;
+  }
+  delete[] temp;
+  return len;
+}
+
+
 
 // Print
 void WebSerialClass::print(String m){
